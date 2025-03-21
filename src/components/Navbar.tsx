@@ -4,21 +4,36 @@ import Link from "next/link";
 import { ShoppingCart, Menu, X } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 import { useAppSelector } from "@/lib/hooks";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Navbar() {
-  const { totalItems } = useAppSelector((state) => state.cart);
+  const [mounted, setMounted] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const { totalItems = 0 } = useAppSelector((state) => state.cart);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  if (!mounted) {
+    return (
+      <header className="sticky top-0 z-50 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm backdrop-blur-md">
+        <div className="container-custom">
+          <div className="flex h-20 items-center justify-between"></div>
+        </div>
+      </header>
+    );
+  }
+
   return (
     <header className="sticky top-0 z-50 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm backdrop-blur-md">
       <div className="container-custom">
         <div className="flex h-20 items-center justify-between">
-          {/* Logo ve Mobil Menü Butonu */}
           <div className="flex items-center">
             <button
               type="button"

@@ -19,12 +19,20 @@ const initialState: CartState = {
 
 // LocalStorage'dan sepet verilerini yükleme
 const loadCartFromStorage = (): CartState => {
-  if (typeof window !== "undefined") {
+  // SSR sırasında bu fonksiyonu çağırmayı önlemek için window kontrolü yapıyoruz
+  if (typeof window === "undefined") {
+    return initialState;
+  }
+
+  try {
     const savedCart = localStorage.getItem("cart");
     if (savedCart) {
       return JSON.parse(savedCart);
     }
+  } catch (error) {
+    console.error("Sepet verisi yüklenirken hata oluştu:", error);
   }
+
   return initialState;
 };
 
