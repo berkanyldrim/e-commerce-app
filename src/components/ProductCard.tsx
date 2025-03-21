@@ -25,6 +25,7 @@ export default function ProductCard({
   const dispatch = useDispatch();
   const [isFavorite, setIsFavorite] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   const handleAddToCart = () => {
     dispatch(addToCart(product));
@@ -35,13 +36,11 @@ export default function ProductCard({
     setIsFavorite(!isFavorite);
   };
 
-  // Tarayıcı tarafında çalıştığında localStorage'dan favori durumunu kontrol et
   useEffect(() => {
     const favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
     setIsFavorite(favorites.includes(product.id));
   }, [product.id]);
 
-  // Favori durumu değiştiğinde localStorage'ı güncelle
   useEffect(() => {
     if (typeof window !== "undefined") {
       const favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
@@ -59,10 +58,23 @@ export default function ProductCard({
     }
   }, [isFavorite, product.id]);
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const formatPrice = (price: number) => {
+    if (!mounted) {
+      return `${price.toFixed(2)} TL`;
+    }
+    return price.toLocaleString("tr-TR", {
+      style: "currency",
+      currency: "TRY",
+    });
+  };
+
   return (
     <TooltipProvider>
       <div className="card group relative h-full flex flex-col bg-white dark:bg-gray-800 rounded-xl shadow hover:shadow-xl transition-all duration-300 hover:translate-y-[-4px] overflow-hidden border border-gray-100 dark:border-gray-700">
-        {/* Favori butonu */}
         <button
           onClick={handleFavoriteToggle}
           className="absolute top-4 right-4 z-10 p-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full shadow-md text-gray-400 hover:text-red-500 dark:text-gray-300 dark:hover:text-red-400 transition-colors"
@@ -77,9 +89,7 @@ export default function ProductCard({
           />
         </button>
 
-        {/* Ürün resmi */}
         <div className="relative aspect-square bg-gray-50 dark:bg-gray-700/30 overflow-hidden">
-          {/* Skeleton yükleme efekti */}
           {!imageLoaded && (
             <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700 animate-pulse rounded-t-xl" />
           )}
@@ -98,7 +108,6 @@ export default function ProductCard({
           />
         </div>
 
-        {/* Ürün bilgileri */}
         <div className="flex flex-col flex-1 p-6">
           <div className="mb-2 flex items-center text-[#FFB017]">
             <Star className="w-5 h-5 fill-current" />
@@ -125,13 +134,9 @@ export default function ProductCard({
             {product.category}
           </p>
 
-          {/* Fiyat alanı */}
           <div className="mt-auto">
             <span className="text-2xl font-bold text-gray-900 dark:text-white block mb-3">
-              {product.price.toLocaleString("tr-TR", {
-                style: "currency",
-                currency: "TRY",
-              })}
+              {formatPrice(product.price)}
             </span>
 
             <button
