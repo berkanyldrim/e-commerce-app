@@ -1,6 +1,6 @@
 "use client";
 
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   removeFromCart,
   updateQuantity,
@@ -9,15 +9,23 @@ import {
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
 import Image from "next/image";
-import { Minus, Plus, Trash2, ArrowLeft, ShoppingBag } from "lucide-react";
-import { useAppSelector } from "@/lib/hooks";
+import {
+  Minus,
+  Plus,
+  Trash2,
+  ArrowLeft,
+  ShoppingBag,
+  CreditCard,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { CartItem } from "@/lib/slices/cartSlice";
+import { RootState } from "@/lib/store";
+import { useRouter } from "next/navigation";
 
 export default function CartPage() {
   const dispatch = useDispatch();
-  const { items, totalItems, totalAmount } = useAppSelector(
-    (state) => state.cart
-  );
+  const cart = useSelector((state: RootState) => state.cart);
+  const router = useRouter();
 
   const handleQuantityChange = (id: number, newQuantity: number) => {
     if (newQuantity >= 1) {
@@ -32,6 +40,11 @@ export default function CartPage() {
   const handleClearCart = () => {
     dispatch(clearCart());
   };
+
+  const totalPrice = cart.items.reduce(
+    (total, item) => total + item.price * item.quantity,
+    0
+  );
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -50,7 +63,7 @@ export default function CartPage() {
           </Link>
         </div>
 
-        {items.length === 0 ? (
+        {cart.items.length === 0 ? (
           <div className="text-center py-16">
             <div className="flex justify-center mb-4">
               <ShoppingBag className="h-16 w-16 text-gray-400 dark:text-gray-600" />
@@ -73,7 +86,7 @@ export default function CartPage() {
             <div className="lg:col-span-2">
               <div className="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
                 <div className="divide-y divide-gray-200 dark:divide-gray-700">
-                  {items.map((item: CartItem) => (
+                  {cart.items.map((item: CartItem) => (
                     <div key={item.id} className="flex p-4 sm:p-6 items-center">
                       <div className="relative h-16 w-16 flex-shrink-0 sm:h-24 sm:w-24 bg-gray-100 dark:bg-gray-700 rounded">
                         <Image
@@ -144,10 +157,10 @@ export default function CartPage() {
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <span className="text-gray-600 dark:text-gray-400">
-                      Toplam ({totalItems} ürün)
+                      Ara Toplam
                     </span>
-                    <span className="text-gray-900 dark:text-white font-medium">
-                      {totalAmount.toLocaleString("tr-TR", {
+                    <span className="font-medium">
+                      {totalPrice.toLocaleString("tr-TR", {
                         style: "currency",
                         currency: "TRY",
                       })}
@@ -157,9 +170,7 @@ export default function CartPage() {
                     <span className="text-gray-600 dark:text-gray-400">
                       Kargo
                     </span>
-                    <span className="text-gray-900 dark:text-white font-medium">
-                      Ücretsiz
-                    </span>
+                    <span className="font-medium text-green-600">Ücretsiz</span>
                   </div>
                   <div className="my-4 border-t border-gray-200 dark:border-gray-700 pt-4">
                     <div className="flex justify-between font-semibold">
@@ -167,7 +178,7 @@ export default function CartPage() {
                         Toplam
                       </span>
                       <span className="text-gray-900 dark:text-white">
-                        {totalAmount.toLocaleString("tr-TR", {
+                        {totalPrice.toLocaleString("tr-TR", {
                           style: "currency",
                           currency: "TRY",
                         })}
@@ -175,9 +186,12 @@ export default function CartPage() {
                     </div>
                   </div>
                 </div>
-                <button className="mt-6 w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                  Ödeme Yap
-                </button>
+                <Button
+                  onClick={() => router.push("/checkout")}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                  <CreditCard /> Ödeme Yap
+                </Button>
               </div>
             </div>
           </div>
