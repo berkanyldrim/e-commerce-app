@@ -1,5 +1,18 @@
 import { useState } from "react";
 import { MapPin } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface CheckoutFormProps {
   deliveryInfo: {
@@ -35,11 +48,16 @@ export default function CheckoutForm({
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
+    setDeliveryInfo((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSelectChange = (name: string, value: string) => {
     setDeliveryInfo((prev) => ({
       ...prev,
       [name]: value,
@@ -71,7 +89,7 @@ export default function CheckoutForm({
       newErrors.address = "Adres alanı zorunludur";
     }
 
-    if (!deliveryInfo.city.trim()) {
+    if (!deliveryInfo.city) {
       newErrors.city = "İl alanı zorunludur";
     }
 
@@ -108,226 +126,154 @@ export default function CheckoutForm({
   ];
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
-      <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center">
-        <MapPin className="h-5 w-5 mr-2 text-[#5D5FEF]" />
-        Teslimat Bilgileri
-      </h2>
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center">
+          <MapPin className="h-5 w-5 mr-2 text-[#5D5FEF]" />
+          Teslimat Bilgileri
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div className="space-y-2">
+              <Label htmlFor="firstName">Ad</Label>
+              <Input
+                id="firstName"
+                name="firstName"
+                value={deliveryInfo.firstName}
+                onChange={handleChange}
+                className={errors.firstName ? "border-red-500" : ""}
+              />
+              {errors.firstName && (
+                <p className="text-red-500 text-sm">{errors.firstName}</p>
+              )}
+            </div>
 
-      <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          <div>
-            <label
-              htmlFor="firstName"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-            >
-              Ad
-            </label>
-            <input
-              type="text"
-              id="firstName"
-              name="firstName"
-              value={deliveryInfo.firstName}
+            <div className="space-y-2">
+              <Label htmlFor="lastName">Soyad</Label>
+              <Input
+                id="lastName"
+                name="lastName"
+                value={deliveryInfo.lastName}
+                onChange={handleChange}
+                className={errors.lastName ? "border-red-500" : ""}
+              />
+              {errors.lastName && (
+                <p className="text-red-500 text-sm">{errors.lastName}</p>
+              )}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div className="space-y-2">
+              <Label htmlFor="email">E-posta</Label>
+              <Input
+                type="email"
+                id="email"
+                name="email"
+                value={deliveryInfo.email}
+                onChange={handleChange}
+                className={errors.email ? "border-red-500" : ""}
+              />
+              {errors.email && (
+                <p className="text-red-500 text-sm">{errors.email}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="phone">Telefon</Label>
+              <Input
+                type="tel"
+                id="phone"
+                name="phone"
+                value={deliveryInfo.phone}
+                onChange={handleChange}
+                className={errors.phone ? "border-red-500" : ""}
+              />
+              {errors.phone && (
+                <p className="text-red-500 text-sm">{errors.phone}</p>
+              )}
+            </div>
+          </div>
+
+          <div className="mb-6 space-y-2">
+            <Label htmlFor="address">Adres</Label>
+            <Textarea
+              id="address"
+              name="address"
+              value={deliveryInfo.address}
               onChange={handleChange}
-              className={`w-full border ${
-                errors.firstName
-                  ? "border-red-500"
-                  : "border-gray-300 dark:border-gray-600"
-              } rounded-lg p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#5D5FEF] focus:outline-none`}
+              rows={3}
+              className={errors.address ? "border-red-500" : ""}
             />
-            {errors.firstName && (
-              <p className="text-red-500 text-sm mt-1">{errors.firstName}</p>
+            {errors.address && (
+              <p className="text-red-500 text-sm">{errors.address}</p>
             )}
           </div>
 
-          <div>
-            <label
-              htmlFor="lastName"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-            >
-              Soyad
-            </label>
-            <input
-              type="text"
-              id="lastName"
-              name="lastName"
-              value={deliveryInfo.lastName}
-              onChange={handleChange}
-              className={`w-full border ${
-                errors.lastName
-                  ? "border-red-500"
-                  : "border-gray-300 dark:border-gray-600"
-              } rounded-lg p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#5D5FEF] focus:outline-none`}
-            />
-            {errors.lastName && (
-              <p className="text-red-500 text-sm mt-1">{errors.lastName}</p>
-            )}
-          </div>
-        </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div className="space-y-2 w-full ">
+              <Label htmlFor="city">İl</Label>
+              <Select
+                value={deliveryInfo.city}
+                onValueChange={(value) => handleSelectChange("city", value)}
+              >
+                <SelectTrigger
+                  id="city"
+                  className={errors.city ? "border-red-500 w-full" : "w-full"}
+                >
+                  <SelectValue placeholder="Seçiniz" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {cities.map((city) => (
+                      <SelectItem key={city} value={city}>
+                        {city}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+              {errors.city && (
+                <p className="text-red-500 text-sm">{errors.city}</p>
+              )}
+            </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-            >
-              E-posta
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={deliveryInfo.email}
-              onChange={handleChange}
-              className={`w-full border ${
-                errors.email
-                  ? "border-red-500"
-                  : "border-gray-300 dark:border-gray-600"
-              } rounded-lg p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#5D5FEF] focus:outline-none`}
-            />
-            {errors.email && (
-              <p className="text-red-500 text-sm mt-1">{errors.email}</p>
-            )}
-          </div>
+            <div className="space-y-2">
+              <Label htmlFor="district">İlçe</Label>
+              <Input
+                id="district"
+                name="district"
+                value={deliveryInfo.district}
+                onChange={handleChange}
+                className={errors.district ? "border-red-500" : ""}
+              />
+              {errors.district && (
+                <p className="text-red-500 text-sm">{errors.district}</p>
+              )}
+            </div>
 
-          <div>
-            <label
-              htmlFor="phone"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-            >
-              Telefon
-            </label>
-            <input
-              type="tel"
-              id="phone"
-              name="phone"
-              value={deliveryInfo.phone}
-              onChange={handleChange}
-              className={`w-full border ${
-                errors.phone
-                  ? "border-red-500"
-                  : "border-gray-300 dark:border-gray-600"
-              } rounded-lg p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#5D5FEF] focus:outline-none`}
-            />
-            {errors.phone && (
-              <p className="text-red-500 text-sm mt-1">{errors.phone}</p>
-            )}
-          </div>
-        </div>
-
-        <div className="mb-6">
-          <label
-            htmlFor="address"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-          >
-            Adres
-          </label>
-          <textarea
-            id="address"
-            name="address"
-            value={deliveryInfo.address}
-            onChange={handleChange}
-            rows={3}
-            className={`w-full border ${
-              errors.address
-                ? "border-red-500"
-                : "border-gray-300 dark:border-gray-600"
-            } rounded-lg p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#5D5FEF] focus:outline-none`}
-          />
-          {errors.address && (
-            <p className="text-red-500 text-sm mt-1">{errors.address}</p>
-          )}
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div>
-            <label
-              htmlFor="city"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-            >
-              İl
-            </label>
-            <select
-              id="city"
-              name="city"
-              value={deliveryInfo.city}
-              onChange={handleChange}
-              className={`w-full border ${
-                errors.city
-                  ? "border-red-500"
-                  : "border-gray-300 dark:border-gray-600"
-              } rounded-lg p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#5D5FEF] focus:outline-none`}
-            >
-              <option value="">Seçiniz</option>
-              {cities.map((city) => (
-                <option key={city} value={city}>
-                  {city}
-                </option>
-              ))}
-            </select>
-            {errors.city && (
-              <p className="text-red-500 text-sm mt-1">{errors.city}</p>
-            )}
+            <div className="space-y-2">
+              <Label htmlFor="zipCode">Posta Kodu</Label>
+              <Input
+                id="zipCode"
+                name="zipCode"
+                value={deliveryInfo.zipCode}
+                onChange={handleChange}
+                className={errors.zipCode ? "border-red-500" : ""}
+              />
+              {errors.zipCode && (
+                <p className="text-red-500 text-sm">{errors.zipCode}</p>
+              )}
+            </div>
           </div>
 
-          <div>
-            <label
-              htmlFor="district"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-            >
-              İlçe
-            </label>
-            <input
-              type="text"
-              id="district"
-              name="district"
-              value={deliveryInfo.district}
-              onChange={handleChange}
-              className={`w-full border ${
-                errors.district
-                  ? "border-red-500"
-                  : "border-gray-300 dark:border-gray-600"
-              } rounded-lg p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#5D5FEF] focus:outline-none`}
-            />
-            {errors.district && (
-              <p className="text-red-500 text-sm mt-1">{errors.district}</p>
-            )}
+          <div className="flex justify-end">
+            <Button type="submit">Devam Et</Button>
           </div>
-
-          <div>
-            <label
-              htmlFor="zipCode"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-            >
-              Posta Kodu
-            </label>
-            <input
-              type="text"
-              id="zipCode"
-              name="zipCode"
-              value={deliveryInfo.zipCode}
-              onChange={handleChange}
-              className={`w-full border ${
-                errors.zipCode
-                  ? "border-red-500"
-                  : "border-gray-300 dark:border-gray-600"
-              } rounded-lg p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#5D5FEF] focus:outline-none`}
-            />
-            {errors.zipCode && (
-              <p className="text-red-500 text-sm mt-1">{errors.zipCode}</p>
-            )}
-          </div>
-        </div>
-
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            className="bg-[#5D5FEF] hover:bg-[#4A4CC8] text-white px-6 py-3 rounded-lg font-medium transition-colors"
-          >
-            Devam Et
-          </button>
-        </div>
-      </form>
-    </div>
+        </form>
+      </CardContent>
+    </Card>
   );
 }

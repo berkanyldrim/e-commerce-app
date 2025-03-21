@@ -1,5 +1,9 @@
 import { useState } from "react";
-import { CreditCard } from "lucide-react";
+import { CreditCard, ArrowLeft } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface PaymentFormProps {
   paymentInfo: {
@@ -25,6 +29,7 @@ export default function PaymentForm({
   paymentInfo,
   setPaymentInfo,
   onNext,
+  onPrev,
   isLoading,
 }: PaymentFormProps) {
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -96,121 +101,121 @@ export default function PaymentForm({
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
-      <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center">
-        <CreditCard className="h-5 w-5 mr-2 text-[#5D5FEF]" />
-        Ödeme Bilgileri
-      </h2>
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center">
+          <CreditCard className="h-5 w-5 mr-2 text-[#5D5FEF]" />
+          Ödeme Bilgileri
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit}>
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="cardNumber">Kart Numarası</Label>
+              <Input
+                id="cardNumber"
+                name="cardNumber"
+                placeholder="1234 5678 9012 3456"
+                value={paymentInfo.cardNumber}
+                onChange={handleChange}
+                className={errors.cardNumber ? "border-red-500" : ""}
+              />
+              {errors.cardNumber && (
+                <p className="text-red-500 text-sm">{errors.cardNumber}</p>
+              )}
+            </div>
 
-      <form onSubmit={handleSubmit}>
-        <div className="mb-6">
-          <label
-            htmlFor="cardNumber"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-          >
-            Kart Numarası
-          </label>
-          <input
-            type="text"
-            id="cardNumber"
-            name="cardNumber"
-            placeholder="1234 5678 9012 3456"
-            value={paymentInfo.cardNumber}
-            onChange={handleChange}
-            className={`w-full border ${
-              errors.cardNumber
-                ? "border-red-500"
-                : "border-gray-300 dark:border-gray-600"
-            } rounded-lg p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#5D5FEF] focus:outline-none`}
-          />
-          {errors.cardNumber && (
-            <p className="text-red-500 text-sm mt-1">{errors.cardNumber}</p>
-          )}
-        </div>
+            <div className="space-y-2">
+              <Label htmlFor="cardHolder">Kart Sahibi</Label>
+              <Input
+                id="cardHolder"
+                name="cardHolder"
+                placeholder="Ad Soyad"
+                value={paymentInfo.cardHolder}
+                onChange={handleChange}
+                className={errors.cardHolder ? "border-red-500" : ""}
+              />
+              {errors.cardHolder && (
+                <p className="text-red-500 text-sm">{errors.cardHolder}</p>
+              )}
+            </div>
 
-        <div className="mb-6">
-          <label
-            htmlFor="cardHolder"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-          >
-            Kart Sahibi
-          </label>
-          <input
-            type="text"
-            id="cardHolder"
-            name="cardHolder"
-            value={paymentInfo.cardHolder}
-            onChange={handleChange}
-            className={`w-full border ${
-              errors.cardHolder
-                ? "border-red-500"
-                : "border-gray-300 dark:border-gray-600"
-            } rounded-lg p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#5D5FEF] focus:outline-none`}
-          />
-          {errors.cardHolder && (
-            <p className="text-red-500 text-sm mt-1">{errors.cardHolder}</p>
-          )}
-        </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="expiryDate">Son Kullanma Tarihi</Label>
+                <Input
+                  id="expiryDate"
+                  name="expiryDate"
+                  placeholder="AA/YY"
+                  value={paymentInfo.expiryDate}
+                  onChange={handleChange}
+                  className={errors.expiryDate ? "border-red-500" : ""}
+                />
+                {errors.expiryDate && (
+                  <p className="text-red-500 text-sm">{errors.expiryDate}</p>
+                )}
+              </div>
 
-        <div className="mb-6">
-          <label
-            htmlFor="expiryDate"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-          >
-            Son Kullanma Tarihi
-          </label>
-          <input
-            type="text"
-            id="expiryDate"
-            name="expiryDate"
-            placeholder="AA/YY"
-            value={paymentInfo.expiryDate}
-            onChange={handleChange}
-            className={`w-full border ${
-              errors.expiryDate
-                ? "border-red-500"
-                : "border-gray-300 dark:border-gray-600"
-            } rounded-lg p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#5D5FEF] focus:outline-none`}
-          />
-          {errors.expiryDate && (
-            <p className="text-red-500 text-sm mt-1">{errors.expiryDate}</p>
-          )}
-        </div>
+              <div className="space-y-2">
+                <Label htmlFor="cvv">CVV</Label>
+                <Input
+                  id="cvv"
+                  name="cvv"
+                  placeholder="123"
+                  value={paymentInfo.cvv}
+                  onChange={handleChange}
+                  className={errors.cvv ? "border-red-500" : ""}
+                />
+                {errors.cvv && (
+                  <p className="text-red-500 text-sm">{errors.cvv}</p>
+                )}
+              </div>
+            </div>
 
-        <div className="mb-6">
-          <label
-            htmlFor="cvv"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-          >
-            CVV
-          </label>
-          <input
-            type="text"
-            id="cvv"
-            name="cvv"
-            placeholder="123"
-            value={paymentInfo.cvv}
-            onChange={handleChange}
-            className={`w-full border ${
-              errors.cvv
-                ? "border-red-500"
-                : "border-gray-300 dark:border-gray-600"
-            } rounded-lg p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#5D5FEF] focus:outline-none`}
-          />
-          {errors.cvv && (
-            <p className="text-red-500 text-sm mt-1">{errors.cvv}</p>
-          )}
-        </div>
-
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            className="bg-[#5D5FEF] hover:bg-[#4A4CC8] text-white px-6 py-3 rounded-lg font-medium transition-colors"
-          >
-            {isLoading ? "Ödeme İşlemi" : "Ödeme Yap"}
-          </button>
-        </div>
-      </form>
-    </div>
+            <div className="flex justify-between mt-6">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onPrev}
+                disabled={isLoading}
+              >
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Geri
+              </Button>
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? (
+                  <>
+                    <svg
+                      className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    İşleniyor...
+                  </>
+                ) : (
+                  "Ödemeyi Tamamla"
+                )}
+              </Button>
+            </div>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
   );
 }
